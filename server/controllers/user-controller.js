@@ -35,7 +35,10 @@ class UserController {
 
   async logout(req, res, next) {
     try {
-      return res.json(['logout'])
+      const {refreshToken} = req.cookies;
+      const token = await userService.logout(refreshToken);
+      res.clearCookie('refreshToken');
+      return res.json(token);
     } catch (e) {
         next(e);
     }
