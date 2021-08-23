@@ -8,7 +8,8 @@ class UserController {
       response.cookie('refreshToken', userData.refreshToken, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true})
       return response.json(userData);
     } catch (e) {
-        console.log(e)
+      //если в next попадает ApiError, он будет обработан по-нашему. Вызывая next, мы попадаем в наш error-middleware
+        next(e);
     }
   }
 
@@ -16,7 +17,7 @@ class UserController {
     try {
 
     } catch (e) {
-
+        next(e);
     }
   }
 
@@ -24,7 +25,7 @@ class UserController {
     try {
 
     } catch (e) {
-
+        next(e);
     }
   }
 
@@ -34,7 +35,7 @@ class UserController {
       await userService.activate(activationLink);
       return res.redirect(process.env.CLIENT_URL);
     } catch (e) {
-      console.log(e)
+        next(e);
     }
   }
 
@@ -42,7 +43,7 @@ class UserController {
     try {
 
     } catch (e) {
-
+        next(e);
     }
   }
 
@@ -51,7 +52,7 @@ class UserController {
     try {
       res.json(['asdfasdfasdf'])
     } catch (e) {
-
+        next(e);
     }
   }
 }
