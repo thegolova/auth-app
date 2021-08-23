@@ -1,14 +1,21 @@
 const userService = require('../service/user-service');
+const {validationResult} = require('express-validator');
+const ApiError = require('../exceptions/api-error');
 
 class UserController {
-  async registration(request, response, next) {
+  async registration(req, res, next) {
     try {
-      const {email, password} = request.body;
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return next(ApiError.BadRequest('Ошибка при валидации', errors.array()));
+      }
+      const {email, password} = req.body;
       const userData = await userService.registration(email, password);
-      response.cookie('refreshToken', userData.refreshToken, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true})
-      return response.json(userData);
+      res.cookie('refreshToken', userData.refreshToken, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true})
+      return res.json(userData);
     } catch (e) {
-      //если в next попадает ApiError, он будет обработан по-нашему. Вызывая next, мы попадаем в наш error-middleware
+      //если в next попадает ApiError, он будет обработан по-нашему.
+      //Вызывая next, мы попадаем в наш error-middleware
         next(e);
     }
   }
